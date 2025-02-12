@@ -148,3 +148,29 @@ class TestAccountService(TestCase):
         data = response.get_json()
         self.assertIn("message", data)
         self.assertIn(f"Account with id [{account_id}] could not be found.", data["message"])
+    
+    def test_get_account_list(self):
+        """It should Get a list of Accounts"""
+        # Create 5 test accounts
+        self._create_accounts(5)
+            
+        # Send GET request to /accounts
+        response = self.client.get(BASE_URL)
+            
+        # Assert response code is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+            
+        # Get data from response
+        data = response.get_json()
+            
+        # Assert that there are 5 accounts returned
+        self.assertEqual(len(data), 5)
+            
+        # Assert that each account has the expected attributes
+        for account in data:
+            self.assertIn("id", account)
+            self.assertIn("name", account)
+            self.assertIn("email", account)
+            self.assertIn("address", account)
+            self.assertIn("phone_number", account)
+            self.assertIn("date_joined", account)
