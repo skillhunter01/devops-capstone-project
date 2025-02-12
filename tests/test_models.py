@@ -175,3 +175,47 @@ class TestAccount(unittest.TestCase):
         """It should not Deserialize an account with a TypeError"""
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, [])
+
+    def test_deserialize_missing_date_joined(self):
+        """It should create an account with default date_joined when field is missing"""
+        account = Account()
+        data = {
+            "name": "John Doe",
+            "email": "jdoe@example.com",
+            "address": "123 Main St",
+            "phone_number": "201-555-1234"
+        }
+        account.deserialize(data)
+        self.assertIsNotNone(account.date_joined)
+        self.assertEqual(account.name, "John Doe")
+        self.assertEqual(account.email, "jdoe@example.com")
+        
+    def test_find_by_name_multiple_accounts(self):
+        """It should Find multiple accounts by name"""
+        # Create 5 accounts with the same name but different emails
+        name = "John Doe"
+        accounts = []
+        for i in range(5):
+            account = AccountFactory(name=name, email=f"jdoe{i}@example.com")
+            account.create()
+            accounts.append(account)
+            
+        # Make sure they all got created
+        self.assertEqual(len(accounts), 5)
+        
+        # Find accounts with the same name
+        same_accounts = Account.find_by_name(name)
+        self.assertEqual(len(same_accounts.all()), 5)
+        
+        # Make sure they're all different
+        emails = [account.email for account in same_accounts]
+        self.assertEqual(len(set(emails)), 5)
+
+    def test_repr_function(self):
+        """It should return a string representation of the account"""
+        account = AccountFactory()
+        account.create()
+        self.assertIsNotNone(account.id)
+        expected = f"<Account {account.name} id=[{account.id}]>"
+        self.assertEqual(repr(account), expected)
+ 
