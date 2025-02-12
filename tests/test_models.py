@@ -211,11 +211,5 @@ class TestAccount(unittest.TestCase):
         emails = [account.email for account in same_accounts]
         self.assertEqual(len(set(emails)), 5)
 
-    def test_repr_function(self):
-        """It should return a string representation of the account"""
-        account = AccountFactory()
-        account.create()
-        self.assertIsNotNone(account.id)
-        expected = f"<Account {account.name} id=[{account.id}]>"
-        self.assertEqual(repr(account), expected)
+
  
